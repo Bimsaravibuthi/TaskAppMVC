@@ -1,0 +1,41 @@
+﻿@model List<CreatedUserModel>
+@{
+    ViewData["Title"] = "Created user";
+}
+
+<style>
+    input[type="text"]:focus {
+        border-color: rgba(126, 239, 104, 0.8) !important;
+        box-shadow: 0 1px 1px rgba(0,128,0, 0.075) inset, 0 0 8px rgba(0,128,0, 0.6) !important;
+        outline: 0 none !important;
+    }
+
+    .form-group {
+        padding-top: 10px;
+    }
+</style>
+
+<div class="container">
+    <div class="row" style="border:2px solid green;border-radius:10px;">
+        <h1 style="text-align: center; margin-bottom: 20px;">User Created Successfully</h1>
+        @foreach (var item in Model)
+        {
+            <div class="field-group" style="display: flex;">
+                <label for="userId">USER ID :&nbsp;</label>
+                <h5 type="text" id="userId">@item.USR_ID</h5>
+            </div>
+            <div class="field-group" style="display: flex;">
+                <label for="name">NAME :&nbsp;</label>
+                <h5 type="text" id="name">@item.USR_NAMEFULL</h5>
+            </div>
+            <div class="field-group" style="display: flex;">
+                <label for="nicNo">NIC NO :&nbsp;</label>
+                <h5 type="text" id="nicNo">@item.USR_NIC</h5>
+            </div>
+            <div class="field-group" style="display: flex;">
+                <label for="userLevel">USER LEVEL :&nbsp;</label>
+                <h5 type="text" id="userLevel">@item.USR_LEVEL</h5>
+            </div>
+        }
+    </div>
+</div>

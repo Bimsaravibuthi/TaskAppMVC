@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using TaskApp.Security;
+using TaskAppMVC.Security;
 using TaskAppMVC.API;
 using TaskAppMVC.Models;
 

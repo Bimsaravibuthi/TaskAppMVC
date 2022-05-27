@@ -39,7 +39,6 @@ namespace TaskAppMVC.API
 
             return strResultTest;
         }
-
         public string GetStoredProDataNoPara(string strProName)
         {
             string StringURL = String.Format(@Configuration["RootConnectionString"] + "getStoredProDataNoPara?tkn=" + strTKN + "&strProcedure=" + strProName);
@@ -60,6 +59,36 @@ namespace TaskAppMVC.API
             }
 
             return strResultTest;
+        }
+        public string PostStoredProDataWithPara(string strProName, string strParaNames, string strParaValues)
+        {
+            string strOut = "";
+
+            try 
+            {
+                string StringURL = String.Format(@Configuration["RootConnectionString"] + "PostStoredProDataWithPara");
+                WebRequest reqObjectPOST = WebRequest.Create(StringURL);
+                reqObjectPOST.Method = "POST";
+                reqObjectPOST.ContentType = "application/json";
+
+                string bodyRequest = "{\"tkn\":\"" + strTKN + "\",\"strProcedure\":\"" + strProName + "\",\"strParaNames\":\"" + strParaNames + "\",\"strParaValues\":\"" + strParaValues + "\"}";
+
+                using var streamWriter = new StreamWriter(reqObjectPOST.GetRequestStream());
+                streamWriter.Write(bodyRequest);
+                streamWriter.Flush();
+                streamWriter.Close();
+
+                var httpResponse = (HttpWebResponse)reqObjectPOST.GetResponse();
+                using (var streamreader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    strOut = streamreader.ReadToEnd();
+                }
+            }
+            catch(WebException e)
+            {
+                strOut = e.ToString();
+            }
+            return strOut;
         }
     }
 }

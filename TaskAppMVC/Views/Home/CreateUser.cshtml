@@ -1,0 +1,83 @@
+﻿@model CreateUserModel
+@{
+    ViewData["Title"] = "Create user";
+}
+
+<style>
+    input[type="text"]:focus {
+        border-color: rgba(126, 239, 104, 0.8) !important;
+        box-shadow: 0 1px 1px rgba(0,128,0, 0.075) inset, 0 0 8px rgba(0,128,0, 0.6) !important;
+        outline: 0 none !important;
+    }
+
+    .form-group {
+        padding-top: 10px;
+    }
+</style>
+
+<div class="container">
+    <div class="row" style="border:2px solid green;border-radius:10px;">
+        <h1 style="text-align:center">Create User</h1>
+        <form method="post" action="/CreateUser">
+
+            @*@if (Model.tbl_Users.Count() > 0)
+                {
+                <table class="table table-striped border">
+                    <tr class="table-secondary">
+                        <th>
+                            <label asp-for="tbl_Users.FirstOrDefault().USR_NIC"></label>
+                        </th>
+                        <th>
+                            <label asp-for="Users.FirstOrDefault().USR_NAMEFULL"></label>
+                        </th>
+                    </tr>
+                    @foreach (var item in Model.Users)
+                    {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(m => item.USR_NIC)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => item.USR_NAMEFULL)
+                    </td>
+                </tr>
+                    }
+                </table>
+                }
+                else
+                {
+                    <p>No Data Available.</p>
+                }*@
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input asp-for="USR_NAMEFULL" type="text" class="form-control" id="fullName" placeholder="Enter Full Name" required>
+            </div>
+            <div class="form-group">
+                <label for="userNIC">NIC Number</label>
+                <input asp-for="USR_NIC" type="text" class="form-control" id="userNIC" placeholder="Enter NIC Number" required>
+            </div>
+            <div class="form-group">
+                <label for="userID">User ID</label>
+                <input asp-for="USR_ID" type="text" class="form-control" id="userID" placeholder="Enter User ID" required>
+            </div>
+            <div class="form-group">
+                <label for="userPassword">Password</label>
+                <input asp-for="USR_PASSWORD" type="password" class="form-control" id="userPassword" placeholder="Enter Password" required>
+            </div>
+            <div class="form-group">
+                <label>User Level</label>
+                <select asp-for="USR_LEVEL" class="form-select" aria-label="Default select example">
+                    <option selected>Open this select menu</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit" value="Create" class="btn btn-success">Submit</button>
+                <button type="reset" class="btn btn-warning">Clear</button>
+            </div>
+            <br />
+        </form>
+    </div>
+</div>

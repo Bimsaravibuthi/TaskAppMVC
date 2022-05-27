@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TaskApp.Security
+namespace TaskAppMVC.Security
 {
     public class PWD_EN_DE
     {
