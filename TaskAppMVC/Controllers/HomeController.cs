@@ -10,10 +10,11 @@ using System.Threading.Tasks;
 using TaskAppMVC.Security;
 using TaskAppMVC.API;
 using TaskAppMVC.Models;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace TaskAppMVC.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         List<MaxUserIdModel> maxUserId = new List<MaxUserIdModel>();
@@ -52,16 +53,15 @@ namespace TaskAppMVC.Controllers
             ViewBag.UserIdList = GetAllUserId();
             return View();
         }
-
-        public IActionResult CreateUser()
-        {
-            return View();
-        }
-
+        
         public IActionResult CreatedUser()
         {
             GetCreatedUser();
             return View(createdUser);
+        }
+        public IActionResult CreateUser()
+        {
+            return View();
         }
 
         [HttpPost("CreateUser")]
@@ -157,9 +157,9 @@ namespace TaskAppMVC.Controllers
                 string strResultTest = api.PostStoredProDataWithPara("Create_User",
                     "Usr_id|Usr_password|Usr_nic|Usr_namefull|Usr_createdate|Usr_level",
                     userId+"|"+pwd+"|"+cum.USR_NIC+"|"+cum.USR_NAMEFULL+"|"+cum.USR_CREATEDATE+"|"+cum.USR_LEVEL);
-                var elevadoresModels = JsonConvert.DeserializeObject(strResultTest);
+                var elevadoresModels = JsonConvert.DeserializeObject<ReturnStatusModel>(strResultTest);
 
-                if(elevadoresModels.Equals("1"))
+                if(elevadoresModels.RETURN_STATUS == 1)
                 {
                     return true;
                 }

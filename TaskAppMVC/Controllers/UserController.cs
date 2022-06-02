@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using TaskAppMVC.Security;
 using TaskAppMVC.API;
 using TaskAppMVC.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace TaskAppMVC.Controllers
 {
@@ -25,49 +26,39 @@ namespace TaskAppMVC.Controllers
             Configuration = configuration;
         }
 
-        [HttpGet("login")]
-        public IActionResult Login(string returnUrl)
+        public IActionResult Login()
         {
-            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> ValidateAsync(LoginViewModel loginView, string returnUrl)
+        [HttpPost]
+        public async Task<IActionResult> Login(string email, string password)
         {
-            //if (!ModelState.IsValid) return View();
-
-            if (UserValidate(loginView.Email, loginView.Password))
+            if (UserValidate(email, password))
             {
-                string adminPermission = "";
-                if (glob_UserLevel.Equals("1"))
+                var claims = new List<Claim>
                 {
-                    adminPermission = "True";
-                }
-
-                var claims = new List<Claim> {
-                    new Claim(ClaimTypes.Name, glob_UserName),
-                    new Claim(ClaimTypes.Email, "admin@mywebsite.com"),
-                    new Claim("User_ID", loginView.Email),
-                    new Claim("Department", "HR"),
-                    new Claim("Admin", adminPermission),
-                    new Claim("Manager", "True")
+                    new Claim(ClaimTypes.Name, email)
                 };
-                var identity = new ClaimsIdentity(claims, "MyCookieAuth");
-                ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
 
-                await HttpContext.SignInAsync("MyCookieAuth", claimsPrincipal);
+                var claimsIdentity = new ClaimsIdentity(claims, "Login");
 
-                if (returnUrl != null)
-                {
-                    return Redirect(returnUrl);
-                }
-                else
-                {
-                    return Redirect("Home/Welcome");
-                }
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+                return Redirect("/Home/Welcome");
+                //if (returnUrl != null)
+                //{
+                //    return Redirect(returnUrl);
+                //}
+                //else
+                //{
+                //    return Redirect("Home/Welcome");
+                //}
             }
-            return Redirect("/");
+            else
+            {
+                return Redirect("/Home/AccessDenied");
+            }
         }
 
         public bool UserValidate(string _emai, string _passwd)
