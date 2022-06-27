@@ -11,10 +11,11 @@ using TaskAppMVC.Security;
 using TaskAppMVC.API;
 using TaskAppMVC.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace TaskAppMVC.Controllers
 {
-    [Authorize]
     public class HomeController : Controller
     {
         List<MaxUserIdModel> maxUserId = new List<MaxUserIdModel>();
@@ -44,43 +45,95 @@ namespace TaskAppMVC.Controllers
             return View();
         }
 
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
         public IEnumerable<MaxTaskIdModel> MaxTaskIdModels { get; set; }
 
-        //[HttpGet("SaveTask")]
+        [Authorize(Policy = "ManagersOnly")]
         public IActionResult SaveTask()
         {
             ViewData["MaxTaskId"] = GetMaxTaskId();
             ViewBag.UserIdList = GetAllUserId();
             return View();
         }
-        
+
+        [HttpPost]
+        public async Task<IActionResult> SaveTask(SaveTaskModel saveTask, IFormFile file)
+        {
+            byte[] supFile = FileConvert(file);
+            string strSupFile = Convert.ToBase64String(supFile);
+            string maxTaskId = GetMaxTaskId();
+            try
+            {
+                APICommunicator api = new APICommunicator(Configuration);
+
+                string[] userIdUserName = saveTask.TSK_ASSUSER.Split('|');
+                string userId = userIdUserName[0];
+
+                string strResultTest = api.PostStoredProDataWithPara("Save_Task",
+                    "Task_id|Company_id|Start_date|End_date|Assigned_user|Description|Support_file|Priority|Create_user",
+                    maxTaskId+ "|"+saveTask.TSK_COMID+"|"+saveTask.TSK_STDATE+"|"+saveTask.TSK_ENDATE+"|"
+                    + userId + "|"+saveTask.TSK_DESC+"|"+strSupFile+"|"+saveTask.TSK_PRIORITY+"|"+saveTask.TSK_CREATEUSER);
+                
+                var elevadoresModels = JsonConvert.DeserializeObject(strResultTest);
+                if (elevadoresModels.ToString().Equals("1"))
+                {
+                    return Redirect("/Home/SaveTask");
+                }
+                else
+                {
+                    return Redirect("/Home/AccessDenied");
+                }
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }         
+        }
+        private byte[] FileConvert(IFormFile file)
+        {
+            byte[] convertedFile = null;
+
+            if (file != null)
+            {
+                {
+                    var target = new MemoryStream();
+                    file.CopyTo(target);
+                    convertedFile = target.ToArray();
+                }
+            }
+            return convertedFile;
+        }
         public IActionResult CreatedUser()
         {
             GetCreatedUser();
             return View(createdUser);
         }
+
+        [Authorize(Policy = "AdminOnly")]
         public IActionResult CreateUser()
+        {           
+            return View();
+        }
+
+        public IActionResult TaskDashboard()
         {
             return View();
         }
 
-        [HttpPost("CreateUser")]
-        public async Task<IActionResult> CreateUserAsync(CreateUserModel createUser)
+        [HttpPost]
+        public async Task<IActionResult> CreateUser(CreateUserModel createUser)
         {
             if (CreateUserPost(createUser))
             {
-                return CreatedUser();
+                return Redirect("/Home/CreatedUser");
             }
 
             return View("Home/Welcome");
         }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
         public string GetMaxTaskId()
         {
             try
@@ -157,9 +210,9 @@ namespace TaskAppMVC.Controllers
                 string strResultTest = api.PostStoredProDataWithPara("Create_User",
                     "Usr_id|Usr_password|Usr_nic|Usr_namefull|Usr_createdate|Usr_level",
                     userId+"|"+pwd+"|"+cum.USR_NIC+"|"+cum.USR_NAMEFULL+"|"+cum.USR_CREATEDATE+"|"+cum.USR_LEVEL);
-                var elevadoresModels = JsonConvert.DeserializeObject<ReturnStatusModel>(strResultTest);
+                var elevadoresModels = JsonConvert.DeserializeObject(strResultTest);
 
-                if(elevadoresModels.RETURN_STATUS == 1)
+                if (elevadoresModels.ToString().Equals("1"))
                 {
                     return true;
                 }
@@ -178,8 +231,8 @@ namespace TaskAppMVC.Controllers
             try
             {
                 APICommunicator api = new APICommunicator(Configuration);
-
-                string strResultTest = api.GetStoredProDataNoPara("Select_Max_User");
+                string strResultTest = api.GetStoredProDataWithParaHeader("Created_User",
+                    "Usr_createdby", User.FindFirst("User_ID").Value);
                 createdUser = JsonConvert.DeserializeObject<List<CreatedUserModel>>(strResultTest);
 
                 if (createdUser.Count != 0)
@@ -195,6 +248,12 @@ namespace TaskAppMVC.Controllers
             {
                 throw ex;
             }
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

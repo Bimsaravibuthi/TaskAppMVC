@@ -24,39 +24,44 @@ namespace TaskAppMVC
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options=> {
-                    options.LoginPath = "/User/Login";
-                    options.Cookie.Name = "MyCookieAuth";
-                    options.AccessDeniedPath = "/Home/AccessDenied";
-                    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-                });
-
-            //services.AddAuthentication("MyCookieAuth").AddCookie("MyCookieAuth", options =>
-            //{
-            //    options.LoginPath = "/User/Login";
-            //    options.Cookie.Name = "MyCookieAuth";
-            //    options.AccessDeniedPath = "/Home/AccessDenied";
-            //    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-            //});
+            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            //    .AddCookie(options=> {
+            //        options.LoginPath = "/User/Login";
+            //        options.Cookie.Name = "MyCookieAuth";
+            //        options.AccessDeniedPath = "/Home/AccessDenied";
+            //        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+            //    });
 
             //services.AddAuthorization(options =>
             //{
             //    options.AddPolicy("LoggedUsersOnly", policy => policy
             //       .RequireClaim("User_ID"));
-
-            //    options.AddPolicy("AdminOnly", policy => policy
-            //        .RequireClaim("User_ID")
-            //        .RequireClaim("Admin", "True"));
-
-            //    options.AddPolicy("MustBelongToHRDepartment", policy => policy
-            //        .RequireClaim("Department", "HR"));
-
-            //    options.AddPolicy("HRManagerOnly", policy => policy
-            //        .RequireClaim("User_ID")
-            //        .RequireClaim("Department", "HR")
-            //        .RequireClaim("Manager", "True"));
             //});
+
+            services.AddAuthentication("MyCookieAuth").AddCookie("MyCookieAuth", options =>
+            {
+                options.LoginPath = "/User/Login";
+                options.Cookie.Name = "MyCookieAuth";
+                options.AccessDeniedPath = "/Home/AccessDenied";
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+            });
+
+            services.AddAuthorization(options => {
+                options.AddPolicy("LoggedUsersOnly", policy => policy
+                   .RequireClaim("User_ID"));
+
+                options.AddPolicy("AdminOnly", policy => policy
+                    .RequireClaim("User_ID")
+                    .RequireClaim("NormalUser", "True")
+                    .RequireClaim("Admin", "True"));
+
+                options.AddPolicy("MustBelongToHRDepartment", policy => policy
+                    .RequireClaim("Department", "HR"));
+
+                options.AddPolicy("ManagersOnly", policy => policy
+                    .RequireClaim("User_ID")
+                    .RequireClaim("NormalUser", "True"));
+            });
 
             services.AddControllersWithViews();
         }

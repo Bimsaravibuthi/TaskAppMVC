@@ -1,4 +1,5 @@
-﻿@{
+﻿@model LoginViewModel
+@{
     ViewData["Title"] = "Login";
 }
 
@@ -6,10 +7,10 @@
     <form method="post">
         <div class="form-group row">
             <div class="col-2">
-                <label></label>
+                <label style="margin-top:10px;">USER ID</label>
             </div>
             <div class="col-6">
-                <input type="text" name="email" class="form-control" />
+                <input type="text" asp-for="User_id" class="form-control" />
             </div>
             <div class="col-4">
                 <span class="text-danger"></span>
@@ -18,10 +19,10 @@
         <br />
         <div class="form-group row">
             <div class="col-2">
-                <label></label>
+                <label style="margin-top:10px;">PASSWORD</label>
             </div>
             <div class="col-6">
-                <input type="password" name="password" class="form-control" />
+                <input type="password" asp-for="Password" class="form-control" />
 
             </div>
             <div class="col-4">

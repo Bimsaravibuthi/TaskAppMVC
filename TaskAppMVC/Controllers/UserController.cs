@@ -18,8 +18,6 @@ namespace TaskAppMVC.Controllers
     {
         List<UserViewModel> userdetails = new List<UserViewModel>();
 
-        string glob_UserLevel = "", glob_UserName = "";
-
         public readonly IConfiguration Configuration;
         public UserController(IConfiguration configuration)
         {
@@ -31,29 +29,52 @@ namespace TaskAppMVC.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Login(string email, string password)
+        public async Task<IActionResult> Logout()
         {
-            if (UserValidate(email, password))
+            await HttpContext.SignOutAsync("MyCookieAuth");
+            return Redirect("/");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel loginView, string returnUrl)
+        {
+            if (UserValidate(loginView.User_id, loginView.Password))
             {
-                var claims = new List<Claim>
+                string adminPermission = "False";
+                string normalUserPermission = "False";
+
+                if(userdetails[0].USR_LEVEL.ToString().Equals("2"))
                 {
-                    new Claim(ClaimTypes.Name, email)
+                    normalUserPermission = "True";
+                }
+                else if(userdetails[0].USR_LEVEL.ToString().Equals("1"))
+                {
+                    adminPermission = "True";
+                    normalUserPermission = "True";
+                }
+
+                var claims = new List<Claim> {
+                    new Claim(ClaimTypes.Name, userdetails[0].USR_NAMEFULL.ToString()),
+                    new Claim(ClaimTypes.Email, "admin@mywebsite.com"),
+                    new Claim("User_ID", loginView.User_id),
+                    new Claim("Department", "HR"),
+                    new Claim("Admin", adminPermission),
+                    new Claim("NormalUser", normalUserPermission)
                 };
 
-                var claimsIdentity = new ClaimsIdentity(claims, "Login");
+                var identity = new ClaimsIdentity(claims, "MyCookieAuth");
+                ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(identity);
 
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+                await HttpContext.SignInAsync("MyCookieAuth", claimsPrincipal);
 
-                return Redirect("/Home/Welcome");
-                //if (returnUrl != null)
-                //{
-                //    return Redirect(returnUrl);
-                //}
-                //else
-                //{
-                //    return Redirect("Home/Welcome");
-                //}
+                if (returnUrl != null)
+                {
+                    return Redirect(returnUrl);
+                }
+                else
+                {
+                    return Redirect("/Home/Welcome");
+                }
             }
             else
             {
@@ -74,8 +95,6 @@ namespace TaskAppMVC.Controllers
                 {
                     if (_passwd == PWD_EN_DE.DecryptString(userdetails[0].USR_PASSWORD.ToString()))
                     {
-                        glob_UserLevel = userdetails[0].USR_LEVEL.ToString();
-                        glob_UserName = userdetails[0].USR_NAMEFULL.ToString();
                         return true;
                     }
                 }

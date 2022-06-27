@@ -15,5 +15,6 @@ namespace TaskAppMVC.Models
         public string USR_NAMEFULL { get; set; }
         public DateTime USR_CREATEDATE { get; set; }
         public string USR_LEVEL { get; set; }
+        public string USR_CREATEDBY { get; set; }
     }
 }

@@ -21,10 +21,25 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Login">Login</a>
-                        </li>
+                        @if (User.HasClaim("Admin", "True"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="CreateUser">Create User</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="SaveTask">Save Task</a>
+                            </li>
+                        }
+                        @if (User.HasClaim("NormalUser", "True"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="TaskDashboard">Task Dashboard</a>
+                            </li>
+                        }
                     </ul>
+                </div>
+                <div class="mr-0">
+                    <partial name="_LoginStatusPartial" />
                 </div>
             </div>
         </nav>

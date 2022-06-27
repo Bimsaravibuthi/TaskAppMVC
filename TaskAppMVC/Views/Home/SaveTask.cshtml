@@ -76,7 +76,7 @@
 
             <div class="form-group">
                 <label for="createUser">Create User</label>
-                <input asp-for="TSK_CREATEUSER" type="text" class="form-control" id="createUser" readonly>
+                <input asp-for="TSK_CREATEUSER" type="text" class="form-control" id="createUser" value="@User.FindFirst("User_ID").Value" readonly>
             </div>
 
             <div class="form-group">

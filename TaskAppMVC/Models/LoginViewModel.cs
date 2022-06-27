@@ -9,8 +9,7 @@ namespace TaskAppMVC.Models
     public class LoginViewModel
     {
         [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+        public string User_id { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
