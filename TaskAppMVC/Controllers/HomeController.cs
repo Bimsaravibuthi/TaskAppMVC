@@ -22,6 +22,7 @@ namespace TaskAppMVC.Controllers
         List<MaxTaskIdModel> maxId = new List<MaxTaskIdModel>();
         List<AllUserIdNameModel> allUserIdNames = new List<AllUserIdNameModel>();
         List<CreatedUserModel> createdUser = new List<CreatedUserModel>();
+        List<TaskModel> tasks = new List<TaskModel>();
 
         public readonly IConfiguration Configuration;
 
@@ -121,7 +122,8 @@ namespace TaskAppMVC.Controllers
 
         public IActionResult TaskDashboard()
         {
-            return View();
+            GetAllTasks();
+            return View(tasks);
         }
 
         [HttpPost]
@@ -245,6 +247,30 @@ namespace TaskAppMVC.Controllers
                 }
             }
             catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public List<TaskModel> GetAllTasks()
+        {
+            try
+            {
+                APICommunicator api = new APICommunicator(Configuration);
+
+                string strResultTest = api.GetStoredProDataNoPara("All_Tasks");
+                var elevadoresModels = JsonConvert.DeserializeObject<List<TaskModel>>(strResultTest);
+                tasks = elevadoresModels;
+
+                if (tasks.Count != 0)
+                {
+                    return tasks;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch(Exception ex)
             {
                 throw ex;
             }
