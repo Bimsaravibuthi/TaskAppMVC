@@ -1,4 +1,4 @@
-﻿@model List<TaskModel>
+﻿@*@model List<TaskModel>*@
 @{
     ViewData["Title"] = "Task Dashboard";
 }
@@ -72,61 +72,192 @@
 <div class="row">
     <div class="col-md-3" style="border-right: 1px solid #ddd; height: 80vh;">
         <ul class="leftpanel-ul">
-            <li>Not Claimed</li>
-            <li>Claimed</li>
-            <li>Claimed By Me</li>
+            <li onclick="viewTaskFunc(1)">Not Claimed</li>
+            <li onclick="viewTaskFunc(0)">Claimed</li>
+            <li onclick="viewTaskFunc(2)">Claimed By Me</li>
         </ul>
     </div>
     <div class="col-md-9" style="height: 80vh;">
         <div class="scrollable-content">
-            <div class="container">
-                @foreach (var item in Model)
-                {
-                    <div class="row" style="margin-bottom: 10px; border: 1px solid #ddd; border-bottom: 2px solid #ddd; border-radius: 10px; padding-bottom: 15px; ">
-                        <div class="col-3">
-                            <div class="form-group">
-                                <label for="cmpnyID">Company ID :</label>
-                                <span id="cmpnyID">@item.TSK_COMID</span>
-                            </div>
-                            <div class="form-group">
-                                <label for="taskID">Task ID :</label>
-                                <span id="taskID">@item.TSK_ID</span>
-                            </div>
-                            <div class="form-group">
-                                <label for="stDate">Start Date :</label>
-                                <span id="stDate">@item.TSK_STDATE.ToString().Substring(0, 10)</span>
-                            </div>
-                            <div class="form-group">
-                                <label for="endDate">End Date :</label>
-                                <span id="endDate">@item.TSK_ENDATE.ToString().Substring(0, 10)</span>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="container">
-                                <div class="form-group">
-                                    <label for="tskDisc">Discription :</label>
-                                </div>
-                            </div>
-                            <textarea readonly>@item.TSK_DESC</textarea>
-                        </div>
-                        <div class="col-3">
-                            <div class="container">
-                                <div class="form-group">
-                                    <label for="priority">Priority :</label>
-                                    <span id="priority">@item.TSK_PRIORITY</span>
-                                </div>
-                                <div class="form-group">
-                                    <label for="supFile">Sup. File :</label>
-                                    <span id="supFile">File</span>
-                                </div>
-                                <div class="form-group" style="padding-top:40px;">
-                                    <button type="button" style="bottom:0;width:100%;" class="btn btn-success">Claim Task</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }                    
+            <div id="card" class="container">
             </div>
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+
+    function onLoadFunc()
+    {
+        viewTaskFunc(1);
+    }
+
+    function viewTaskFunc(frm)
+    {
+        var a;
+
+        const container = document.getElementById('card');
+        container.textContent = '';
+
+        $.ajax({
+            method: "GET",
+            url: "@Url.Action("getTask")",
+            dataType: "json",
+            success: function (data) {
+                a = JSON.parse(data);
+
+                for (i = 0; i < a.length; i++)
+                {
+                    if (frm == 0) {
+                        if (a[i].TSK_ASSUSER != null) {                            
+
+                            $("#card").append('<div class="row" style="margin-bottom: 10px; border: 1px solid #ddd; border-bottom: 2px solid #ddd; border-radius: 10px; padding-bottom: 15px; ">\
+                                                <div class="col-3">\
+                                                    <div class="form-group">\
+                                                        <label for="cmpnyID">Company ID :</label>\
+                                                        <span id="cmpnyID">'+ a[i].TSK_COMID + '</span>\
+                                                    </div>\
+                                                    <div class="form-group">\
+                                                        <label for="taskID">Task ID :</label>\
+                                                        <span id="taskID">'+ a[i].TSK_ID + '</span>\
+                                                    </div>\
+                                                    <div class="form-group">\
+                                                        <label for="stDate">Start Date :</label>\
+                                                        <span id="stDate">'+ a[i].TSK_STDATE.substring(0, 10) + '</span>\
+                                                    </div>\
+                                                    <div class="form-group">\
+                                                        <label for="endDate">End Date :</label>\
+                                                        <span id="endDate">'+ a[i].TSK_ENDATE.substring(0, 10) + '</span>\
+                                                    </div>\
+                                                </div>\
+                                                <div class="col-6">\
+                                                    <div class="container">\
+                                                        <div class="form-group">\
+                                                            <label for="tskDisc">Discription :</label>\
+                                                        </div>\
+                                                    </div>\
+                                                    <textarea readonly>'+ a[i].TSK_DESC + '</textarea>\
+                                                </div>\
+                                                <div class="col-3">\
+                                                    <div class="container">\
+                                                        <div class="form-group">\
+                                                            <label for="priority">Priority :</label>\
+                                                            <span id="priority">'+ a[i].TSK_PRIORITY + '</span>\
+                                                        </div>\
+                                                        <div class="form-group">\
+                                                            <label for="supFile">Sup. File :</label>\
+                                                            <span id="supFile">File</span>\
+                                                        </div>\
+                                                        <div class="form-group">\
+                                                            <label for="assUser">Claimed by :</label>\
+                                                            <span id="assUser">'+ a[i].TSK_ASSUSER + '</span>\
+                                                        </div>\
+                                                    </div>\
+                                                </div>\
+                                            </div>');
+                        }
+                    }
+                    else if (frm == 1) {
+                        if (a[i].TSK_ASSUSER == null) {
+                            $("#card").append('<div class="row" style="margin-bottom: 10px; border: 1px solid #ddd; border-bottom: 2px solid #ddd; border-radius: 10px; padding-bottom: 15px; ">\
+                                                <div class="col-3">\
+                                                    <div class="form-group">\
+                                                        <label for="cmpnyID">Company ID :</label>\
+                                                        <span id="cmpnyID">'+ a[i].TSK_COMID + '</span>\
+                                                    </div>\
+                                                    <div class="form-group">\
+                                                        <label for="taskID">Task ID :</label>\
+                                                        <span id="taskID">'+ a[i].TSK_ID + '</span>\
+                                                    </div>\
+                                                    <div class="form-group">\
+                                                        <label for="stDate">Start Date :</label>\
+                                                        <span id="stDate">'+ a[i].TSK_STDATE.substring(0, 10) + '</span>\
+                                                    </div>\
+                                                    <div class="form-group">\
+                                                        <label for="endDate">End Date :</label>\
+                                                        <span id="endDate">'+ a[i].TSK_ENDATE.substring(0, 10) + '</span>\
+                                                    </div>\
+                                                </div>\
+                                                <div class="col-6">\
+                                                    <div class="container">\
+                                                        <div class="form-group">\
+                                                            <label for="tskDisc">Discription :</label>\
+                                                        </div>\
+                                                    </div>\
+                                                    <textarea readonly>'+ a[i].TSK_DESC + '</textarea>\
+                                                </div>\
+                                                <div class="col-3">\
+                                                    <div class="container">\
+                                                        <div class="form-group">\
+                                                            <label for="priority">Priority :</label>\
+                                                            <span id="priority">'+ a[i].TSK_PRIORITY + '</span>\
+                                                        </div>\
+                                                        <div class="form-group">\
+                                                            <label for="supFile">Sup. File :</label>\
+                                                            <span id="supFile">File</span>\
+                                                        </div>\
+                                                        <div class="form-group" style="padding-top:40px;">\
+                                                            <button type="button" style="bottom:0;width:100%;" class="btn btn-success">Claim Task</button>\
+                                                        </div>\
+                                                    </div>\
+                                                </div>\
+                                            </div>');
+                        }
+                    }
+                    else {
+                        if (a[i].TSK_ASSUSER == "@User.FindFirst("User_ID").Value" ) {
+                            $("#card").append('<div class="row" style="margin-bottom: 10px; border: 1px solid #ddd; border-bottom: 2px solid #ddd; border-radius: 10px; padding-bottom: 15px; ">\
+                                                <div class="col-3">\
+                                                    <div class="form-group">\
+                                                        <label for="cmpnyID">Company ID :</label>\
+                                                        <span id="cmpnyID">'+ a[i].TSK_COMID + '</span>\
+                                                    </div>\
+                                                    <div class="form-group">\
+                                                        <label for="taskID">Task ID :</label>\
+                                                        <span id="taskID">'+ a[i].TSK_ID + '</span>\
+                                                    </div>\
+                                                    <div class="form-group">\
+                                                        <label for="stDate">Start Date :</label>\
+                                                        <span id="stDate">'+ a[i].TSK_STDATE.substring(0, 10) + '</span>\
+                                                    </div>\
+                                                    <div class="form-group">\
+                                                        <label for="endDate">End Date :</label>\
+                                                        <span id="endDate">'+ a[i].TSK_ENDATE.substring(0, 10) + '</span>\
+                                                    </div>\
+                                                </div>\
+                                                <div class="col-6">\
+                                                    <div class="container">\
+                                                        <div class="form-group">\
+                                                            <label for="tskDisc">Discription :</label>\
+                                                        </div>\
+                                                    </div>\
+                                                    <textarea readonly>'+ a[i].TSK_DESC + '</textarea>\
+                                                </div>\
+                                                <div class="col-3">\
+                                                    <div class="container">\
+                                                        <div class="form-group">\
+                                                            <label for="priority">Priority :</label>\
+                                                            <span id="priority">'+ a[i].TSK_PRIORITY + '</span>\
+                                                        </div>\
+                                                        <div class="form-group">\
+                                                            <label for="supFile">Sup. File :</label>\
+                                                            <span id="supFile">File</span>\
+                                                        </div>\
+                                                        <div class="form-group">\
+                                                            <label for="assUser">Claimed by :</label>\
+                                                            <span id="assUser">'+ a[i].TSK_ASSUSER + '</span>\
+                                                        </div>\
+                                                    </div>\
+                                                </div>\
+                                            </div>');
+                        }
+                    }
+                }
+            },
+            error: function (req, status, error) {
+
+            }
+        });
+    }
+
+</script>

@@ -71,13 +71,10 @@ namespace TaskAppMVC.Controllers
             {
                 APICommunicator api = new APICommunicator(Configuration);
 
-                string[] userIdUserName = saveTask.TSK_ASSUSER.Split('|');
-                string userId = userIdUserName[0];
-
                 string strResultTest = api.PostStoredProDataWithPara("Save_Task",
-                    "Task_id|Company_id|Start_date|End_date|Assigned_user|Description|Support_file|Priority|Create_user",
-                    maxTaskId+ "|"+saveTask.TSK_COMID+"|"+saveTask.TSK_STDATE+"|"+saveTask.TSK_ENDATE+"|"
-                    + userId + "|"+saveTask.TSK_DESC+"|"+strSupFile+"|"+saveTask.TSK_PRIORITY+"|"+saveTask.TSK_CREATEUSER);
+                    "Task_id|Company_id|Start_date|End_date|Description|Support_file|Priority|Create_user",
+                    maxTaskId+ "|"+saveTask.TSK_COMID+"|"+saveTask.TSK_STDATE+"|"+saveTask.TSK_ENDATE+
+                    "|"+saveTask.TSK_DESC+"|"+strSupFile+"|"+saveTask.TSK_PRIORITY+"|"+saveTask.TSK_CREATEUSER);
                 
                 var elevadoresModels = JsonConvert.DeserializeObject(strResultTest);
                 if (elevadoresModels.ToString().Equals("1"))
@@ -122,8 +119,28 @@ namespace TaskAppMVC.Controllers
 
         public IActionResult TaskDashboard()
         {
+            //GetAllTasks();
+            return View(/*tasks*/);
+        }
+
+        public JsonResult getTask()
+        {
             GetAllTasks();
-            return View(tasks);
+
+            //List<TaskModel> tasks2 = new List<TaskModel>()
+            //{
+            //    new TaskModel{TSK_ID="TSK1",TSK_COMID="KFL",TSK_DESC="Nothing"},
+            //    new TaskModel{TSK_ID="TSK2",TSK_COMID="MHL",TSK_DESC="There is something"}
+            //};
+
+            var data = JsonConvert.SerializeObject(tasks);
+            return Json(data);
+        }
+
+        [HttpPost]
+        public int Add(int number1, int number2)
+        {
+            return number1+number2;
         }
 
         [HttpPost]

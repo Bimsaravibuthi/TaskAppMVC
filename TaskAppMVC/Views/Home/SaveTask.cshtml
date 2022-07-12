@@ -40,16 +40,6 @@
                 <input asp-for="TSK_ENDATE" type="date" class="form-control" id="endDate" placeholder="Task End Date" required>
             </div>
             <div class="form-group">
-                <label>Assign User</label>
-                <select asp-for="TSK_ASSUSER" class="form-select" aria-label="Default select example">
-                    <option selected>Open this select menu</option>
-                    @foreach (var item in ViewBag.UserIdList)
-                    {
-                        <option>@item.USR_ID &emsp;|&emsp; @item.USR_NAMEFULL</option>
-                    }
-                </select>
-            </div>
-            <div class="form-group">
                 <label for="taskDescription">Task</label>
                 <textarea asp-for="TSK_DESC" class="form-control rounded-1" id="taskDescription" rows="3"></textarea>
             </div>
