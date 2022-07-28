@@ -137,6 +137,18 @@ namespace TaskAppMVC.Controllers
             return Json(data);
         }
 
+        public bool claimTask(string tskId)
+        {
+            string asds = User.FindFirst("User_ID").Value.ToString();
+            Console.WriteLine(asds);
+
+            if (ClaimNewTask(tskId, asds))
+            {
+                return true;
+            }
+            return false;
+        }
+
         [HttpPost]
         public int Add(int number1, int number2)
         {
@@ -290,6 +302,30 @@ namespace TaskAppMVC.Controllers
             catch(Exception ex)
             {
                 throw ex;
+            }
+        }
+
+        public bool ClaimNewTask(string tskId, string usrId)
+        {
+            try
+            {
+                APICommunicator api = new APICommunicator(Configuration);
+
+                string strResultTest = api.PostStoredProDataWithPara("Claim_Task", "Tsk_id|Usr_id", tskId+"|"+usrId);
+                var elevadoresModels = JsonConvert.DeserializeObject(strResultTest);
+
+                if (elevadoresModels.ToString().Equals("1"))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
             }
         }
 

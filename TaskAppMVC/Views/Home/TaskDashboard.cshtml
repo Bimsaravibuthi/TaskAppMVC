@@ -10,21 +10,21 @@
         padding-top: 5px;
     }
 
-    .leftpanel-ul li {
-        text-align: center;
-        color: gray;
-        font-size: x-large;
-        padding: 10px 10px;
-        border-bottom: 2px solid #ddd;
-        border-left: 1px solid #ddd;
-        border-right: 1px solid #ddd;
-        border-radius: 10px;
-    }
+        .leftpanel-ul li {
+            text-align: center;
+            color: gray;
+            font-size: x-large;
+            padding: 10px 10px;
+            border-bottom: 2px solid #ddd;
+            border-left: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+            border-radius: 10px;
+        }
 
-    .leftpanel-ul li:hover {
-        background-color: #5cb85c;
-        color: white;
-    }
+            .leftpanel-ul li:hover {
+                background-color: #5cb85c;
+                color: white;
+            }
 
     .card {
         border-bottom: 2px solid #ddd;
@@ -85,7 +85,31 @@
     </div>
 </div>
 
+<!-- Button trigger modal -->
+@*<button type="button" class="btn btn-primary">
+    Launch demo modal
+</button>*@
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h2 id="inpt"></h2>
+            </div>
+            <div class="modal-footer">
+                <button onclick="conformOnClick()" data-bs-dismiss="modal" type="button" class="btn btn-success">Claim Task</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript">
+
+    var tskId = "";
 
     function onLoadFunc()
     {
@@ -109,7 +133,7 @@
                 for (i = 0; i < a.length; i++)
                 {
                     if (frm == 0) {
-                        if (a[i].TSK_ASSUSER != null) {                            
+                        if (a[i].TSK_ASSUSER != null) {
 
                             $("#card").append('<div class="row" style="margin-bottom: 10px; border: 1px solid #ddd; border-bottom: 2px solid #ddd; border-radius: 10px; padding-bottom: 15px; ">\
                                                 <div class="col-3">\
@@ -197,7 +221,7 @@
                                                             <span id="supFile">File</span>\
                                                         </div>\
                                                         <div class="form-group" style="padding-top:40px;">\
-                                                            <button type="button" style="bottom:0;width:100%;" class="btn btn-success">Claim Task</button>\
+                                                            <button id="'+ a[i].TSK_ID + '" onclick="claimOnClick(this.id)" type="button" style="bottom:0;width:100%;" class="btn btn-success">Claim Task</button>\
                                                         </div>\
                                                     </div>\
                                                 </div>\
@@ -255,6 +279,32 @@
                 }
             },
             error: function (req, status, error) {
+
+            }
+        });
+    }
+
+    function claimOnClick(id)
+    {
+        tskId = id;
+        var myModal = document.getElementById('exampleModal')
+
+        document.getElementById("inpt").innerHTML = 'Are you sure you want to claim "'+ id + '"?';
+        $(myModal).modal("show");
+    }
+
+    function conformOnClick()
+    {
+        $.ajax({
+            method: "POST",
+            url: "@Url.Action("claimTask")",
+            data: { "tskId": tskId },
+            success: function (data)
+            {
+                viewTaskFunc(1);
+            },
+            error: function (req, status, error)
+            {
 
             }
         });
