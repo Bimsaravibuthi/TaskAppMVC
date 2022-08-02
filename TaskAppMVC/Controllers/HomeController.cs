@@ -91,6 +91,7 @@ namespace TaskAppMVC.Controllers
                 throw ex;
             }         
         }
+  
         private byte[] FileConvert(IFormFile file)
         {
             byte[] convertedFile = null;
@@ -117,6 +118,7 @@ namespace TaskAppMVC.Controllers
             return View();
         }
 
+        [Authorize(Policy = "LoggedUsersOnly")]
         public IActionResult TaskDashboard()
         {
             //GetAllTasks();
@@ -140,9 +142,19 @@ namespace TaskAppMVC.Controllers
         public bool claimTask(string tskId)
         {
             string asds = User.FindFirst("User_ID").Value.ToString();
-            Console.WriteLine(asds);
 
             if (ClaimNewTask(tskId, asds))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool submitTask(string tskId)
+        {
+            string asds = User.FindFirst("User_ID").Value.ToString();
+
+            if (SubmitNewTask(tskId))
             {
                 return true;
             }
@@ -165,6 +177,7 @@ namespace TaskAppMVC.Controllers
 
             return View("Home/Welcome");
         }
+    
         public string GetMaxTaskId()
         {
             try
@@ -304,7 +317,6 @@ namespace TaskAppMVC.Controllers
                 throw ex;
             }
         }
-
         public bool ClaimNewTask(string tskId, string usrId)
         {
             try
@@ -312,6 +324,29 @@ namespace TaskAppMVC.Controllers
                 APICommunicator api = new APICommunicator(Configuration);
 
                 string strResultTest = api.PostStoredProDataWithPara("Claim_Task", "Tsk_id|Usr_id", tskId+"|"+usrId);
+                var elevadoresModels = JsonConvert.DeserializeObject(strResultTest);
+
+                if (elevadoresModels.ToString().Equals("1"))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+        public bool SubmitNewTask(string tskId)
+        {
+            try
+            {
+                APICommunicator api = new APICommunicator(Configuration);
+
+                string strResultTest = api.PostStoredProDataWithPara("Submit_Task", "Tsk_id", tskId);
                 var elevadoresModels = JsonConvert.DeserializeObject(strResultTest);
 
                 if (elevadoresModels.ToString().Equals("1"))

@@ -1,5 +1,4 @@
-﻿@*@model List<TaskModel>*@
-@{
+﻿@{
     ViewData["Title"] = "Task Dashboard";
 }
 
@@ -75,6 +74,7 @@
             <li onclick="viewTaskFunc(1)">Not Claimed</li>
             <li onclick="viewTaskFunc(0)">Claimed</li>
             <li onclick="viewTaskFunc(2)">Claimed By Me</li>
+            <li onclick="viewTaskFunc(3)">Submited</li>
         </ul>
     </div>
     <div class="col-md-9" style="height: 80vh;">
@@ -109,7 +109,8 @@
 
 <script type="text/javascript">
 
-    var tskId = "";
+    var claimTskId = "";
+    var submitTskId = "";
 
     function onLoadFunc()
     {
@@ -133,7 +134,7 @@
                 for (i = 0; i < a.length; i++)
                 {
                     if (frm == 0) {
-                        if (a[i].TSK_ASSUSER != null) {
+                        if (a[i].TSK_ASSUSER != null && a[i].TSK_SBMTSTATUS == "false") {
 
                             $("#card").append('<div class="row" style="margin-bottom: 10px; border: 1px solid #ddd; border-bottom: 2px solid #ddd; border-radius: 10px; padding-bottom: 15px; ">\
                                                 <div class="col-3">\
@@ -221,15 +222,63 @@
                                                             <span id="supFile">File</span>\
                                                         </div>\
                                                         <div class="form-group" style="padding-top:40px;">\
-                                                            <button id="'+ a[i].TSK_ID + '" onclick="claimOnClick(this.id)" type="button" style="bottom:0;width:100%;" class="btn btn-success">Claim Task</button>\
+                                                            <button id="'+ a[i].TSK_ID + '" onclick="ActionOnClick(this.id, 1)" type="button" style="bottom:0;width:100%;" class="btn btn-success">Claim Task</button>\
                                                         </div>\
                                                     </div>\
                                                 </div>\
                                             </div>');
                         }
                     }
-                    else {
-                        if (a[i].TSK_ASSUSER == "@User.FindFirst("User_ID").Value" ) {
+                    else if (frm == 2) {
+                        if (a[i].TSK_ASSUSER == "@User.FindFirst("User_ID").Value" && a[i].TSK_SBMTSTATUS == "false") {
+                            $("#card").append('<div class="row" style="margin-bottom: 10px; border: 1px solid #ddd; border-bottom: 2px solid #ddd; border-radius: 10px; padding-bottom: 15px; ">\
+                                                <div class="col-3">\
+                                                    <div class="form-group">\
+                                                        <label for="cmpnyID">Company ID :</label>\
+                                                        <span id="cmpnyID">'+ a[i].TSK_COMID + '</span>\
+                                                    </div>\
+                                                    <div class="form-group">\
+                                                        <label for="taskID">Task ID :</label>\
+                                                        <span id="taskID">'+ a[i].TSK_ID + '</span>\
+                                                    </div>\
+                                                    <div class="form-group">\
+                                                        <label for="stDate">Start Date :</label>\
+                                                        <span id="stDate">'+ a[i].TSK_STDATE.substring(0, 10) + '</span>\
+                                                    </div>\
+                                                    <div class="form-group">\
+                                                        <label for="endDate">End Date :</label>\
+                                                        <span id="endDate">'+ a[i].TSK_ENDATE.substring(0, 10) + '</span>\
+                                                    </div>\
+                                                </div>\
+                                                <div class="col-6">\
+                                                    <div class="container">\
+                                                        <div class="form-group">\
+                                                            <label for="tskDisc">Discription :</label>\
+                                                        </div>\
+                                                    </div>\
+                                                    <textarea readonly>'+ a[i].TSK_DESC + '</textarea>\
+                                                </div>\
+                                                <div class="col-3">\
+                                                    <div class="container">\
+                                                        <div class="form-group">\
+                                                            <label for="priority">Priority :</label>\
+                                                            <span id="priority">'+ a[i].TSK_PRIORITY + '</span>\
+                                                        </div>\
+                                                        <div class="form-group">\
+                                                            <label for="supFile">Sup. File :</label>\
+                                                            <span id="supFile">File</span>\
+                                                        </div>\
+                                                        <div class="form-group" style="padding-top:40px;">\
+                                                            <button id="'+ a[i].TSK_ID + '" onclick="ActionOnClick(this.id, 2)" type="button" style="bottom:0;width:100%;" class="btn btn-success">Submit Task</button>\
+                                                        </div>\
+                                                    </div>\
+                                                </div>\
+                                            </div>');
+                        }
+                    }
+                    else if (frm == 3) {
+                        if (a[i].TSK_SBMTSTATUS == "true")
+                        {
                             $("#card").append('<div class="row" style="margin-bottom: 10px; border: 1px solid #ddd; border-bottom: 2px solid #ddd; border-radius: 10px; padding-bottom: 15px; ">\
                                                 <div class="col-3">\
                                                     <div class="form-group">\
@@ -284,30 +333,55 @@
         });
     }
 
-    function claimOnClick(id)
+    function ActionOnClick(id, action)
     {
-        tskId = id;
         var myModal = document.getElementById('exampleModal')
 
-        document.getElementById("inpt").innerHTML = 'Are you sure you want to claim "'+ id + '"?';
+        if (action == 1)
+        {
+            claimTskId = id;
+            document.getElementById("inpt").innerHTML = 'Are you sure you want to claim "' + id + '"?';
+        }
+        else
+        {
+            submitTskId = id
+            document.getElementById("inpt").innerHTML = 'Are you sure you want to submit "' + id + '"?';
+        }
         $(myModal).modal("show");
     }
 
     function conformOnClick()
     {
-        $.ajax({
-            method: "POST",
-            url: "@Url.Action("claimTask")",
-            data: { "tskId": tskId },
-            success: function (data)
-            {
-                viewTaskFunc(1);
-            },
-            error: function (req, status, error)
-            {
+        if (claimTskId != "" && submitTskId == "") {
+            $.ajax({
+                method: "POST",
+                url: "@Url.Action("claimTask")",
+                data: { "tskId": claimTskId },
+                success: function (data) {
+                    viewTaskFunc(1);
+                },
+                error: function (req, status, error) {
 
-            }
-        });
+                }
+            });
+        }
+        else if (submitTskId != "" && claimTskId == "")
+        {
+            $.ajax({
+                method: "POST",
+                url: "@Url.Action("submitTask")",
+                data: { "tskId": submitTskId },
+                success: function (data) {
+                    viewTaskFunc(2);
+                },
+                error: function (req, status, error) {
+
+                }
+            });
+        }
+
+        claimTskId = "";
+        submitTskId = "";
     }
 
 </script>
