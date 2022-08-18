@@ -23,6 +23,7 @@ namespace TaskAppMVC.Controllers
         List<AllUserIdNameModel> allUserIdNames = new List<AllUserIdNameModel>();
         List<CreatedUserModel> createdUser = new List<CreatedUserModel>();
         List<TaskModel> tasks = new List<TaskModel>();
+        List<GetFileModel> files = new List<GetFileModel>();
 
         public readonly IConfiguration Configuration;
 
@@ -106,6 +107,7 @@ namespace TaskAppMVC.Controllers
             }
             return convertedFile;
         }
+
         public IActionResult CreatedUser()
         {
             GetCreatedUser();
@@ -134,7 +136,7 @@ namespace TaskAppMVC.Controllers
             //    new TaskModel{TSK_ID="TSK1",TSK_COMID="KFL",TSK_DESC="Nothing"},
             //    new TaskModel{TSK_ID="TSK2",TSK_COMID="MHL",TSK_DESC="There is something"}
             //};
-
+            
             var data = JsonConvert.SerializeObject(tasks);
             return Json(data);
         }
@@ -170,6 +172,7 @@ namespace TaskAppMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUser(CreateUserModel createUser)
         {
+            createUser.USR_CREATEDBY = User.FindFirst("User_ID").Value;
             if (CreateUserPost(createUser))
             {
                 return Redirect("/Home/CreatedUser");
@@ -177,7 +180,21 @@ namespace TaskAppMVC.Controllers
 
             return View("Home/Welcome");
         }
-    
+
+        //[HttpGet]
+        //public FileResult DownLoadFile(string tskId)
+        //{
+        //    byte[] fileByte = Convert.FromBase64String(GetFileData(tskId));
+        //    return File(fileByte, "application/pdf", tskId + " Documents.pdf");
+        //}
+
+        public JsonResult DownLoadFile(string tskId)
+        {
+            byte[] fileByte = Convert.FromBase64String(GetFileData(tskId));
+            var data = JsonConvert.SerializeObject(fileByte);
+            return Json(data);
+        }
+
         public string GetMaxTaskId()
         {
             try
@@ -252,8 +269,8 @@ namespace TaskAppMVC.Controllers
                 APICommunicator api = new APICommunicator(Configuration);            
 
                 string strResultTest = api.PostStoredProDataWithPara("Create_User",
-                    "Usr_id|Usr_password|Usr_nic|Usr_namefull|Usr_createdate|Usr_level",
-                    userId+"|"+pwd+"|"+cum.USR_NIC+"|"+cum.USR_NAMEFULL+"|"+cum.USR_CREATEDATE+"|"+cum.USR_LEVEL);
+                    "Usr_id|Usr_password|Usr_nic|Usr_namefull|Usr_createdate|Usr_level|Usr_createdby",
+                    userId+"|"+pwd+"|"+cum.USR_NIC+"|"+cum.USR_NAMEFULL+"|"+cum.USR_CREATEDATE+"|"+cum.USR_LEVEL+"|"+cum.USR_CREATEDBY);
                 var elevadoresModels = JsonConvert.DeserializeObject(strResultTest);
 
                 if (elevadoresModels.ToString().Equals("1"))
@@ -363,6 +380,46 @@ namespace TaskAppMVC.Controllers
                 throw e;
             }
         }
+
+        public string GetFileData(string tskId)
+        {
+            try
+            {
+                APICommunicator api = new APICommunicator(Configuration);
+
+                string strResultTest = api.GetStoredProDataWithParaHeader("File_Download",
+                    "tsk_id", tskId);
+                files = JsonConvert.DeserializeObject<List<GetFileModel>>(strResultTest);
+
+                if (files.Count != 0)
+                {
+                    return files[0].TSK_SUPFILE;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        //public async Task<FileResult> OnGetDownloadFileAsync(int? id)
+        //{
+        //    // obtain bytes of the file 
+        //    // from database or by directly 
+        //    // reading the files 
+        //    //byte[] fileBytes = . . . ;
+
+        //    return File(
+        //        fileBytes,         /*byte []*/
+        //        "application/pdf", /*mime type*/
+        //        "fileName.pdf"     /*name of the file*/
+        //    );
+
+        //}
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

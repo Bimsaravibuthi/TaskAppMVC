@@ -70,13 +70,30 @@
 
 <div class="row">
     <div class="col-md-3" style="border-right: 1px solid #ddd; height: 80vh;">
-        <ul class="leftpanel-ul">
+        @*<ul class="leftpanel-ul">
             <li onclick="viewTaskFunc(1)">Not Claimed</li>
             <li onclick="viewTaskFunc(0)">Claimed</li>
             <li onclick="viewTaskFunc(2)">Claimed By Me</li>
             <li onclick="viewTaskFunc(3)">Submited</li>
-        </ul>
+        </ul>*@
+        <div class="form-group">
+            <input onclick="viewTaskFunc(1)" type="radio" class="btn-check" name="options" id="option0" autocomplete="off" checked>
+            <label style="width:100%;" class="btn btn-outline-success" for="option0">Not Claimed</label>
+        </div>
+        <div class="form-group">
+            <input onclick="viewTaskFunc(0)" type="radio" class="btn-check" name="options" id="option1" autocomplete="off">
+            <label style="width:100%;" class="btn btn-outline-success" for="option1">Claimed</label>
+        </div>
+        <div class="form-group">
+            <input onclick="viewTaskFunc(2)" type="radio" class="btn-check" name="options" id="option2" autocomplete="off">
+            <label style="width:100%;" class="btn btn-outline-success" for="option2">Claimed By Me</label>
+        </div>
+        <div class="form-group">
+            <input onclick="viewTaskFunc(3)" type="radio" class="btn-check" name="options" id="option3" autocomplete="off">
+            <label style="width:100%;" class="btn btn-outline-success" for="option3">Submited</label>
+        </div>      
     </div>
+
     <div class="col-md-9" style="height: 80vh;">
         <div class="scrollable-content">
             <div id="card" class="container">
@@ -84,11 +101,6 @@
         </div>
     </div>
 </div>
-
-<!-- Button trigger modal -->
-@*<button type="button" class="btn btn-primary">
-    Launch demo modal
-</button>*@
 
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -101,7 +113,7 @@
                 <h2 id="inpt"></h2>
             </div>
             <div class="modal-footer">
-                <button onclick="conformOnClick()" data-bs-dismiss="modal" type="button" class="btn btn-success">Claim Task</button>
+                <button onclick="conformOnClick()" data-bs-dismiss="modal" type="button" class="btn btn-success">Claim Task</button>       
             </div>
         </div>
     </div>
@@ -119,7 +131,7 @@
 
     function viewTaskFunc(frm)
     {
-        var a;
+        var bucket;
 
         const container = document.getElementById('card');
         container.textContent = '';
@@ -129,30 +141,30 @@
             url: "@Url.Action("getTask")",
             dataType: "json",
             success: function (data) {
-                a = JSON.parse(data);
+                bucket = JSON.parse(data);
 
-                for (i = 0; i < a.length; i++)
+                for (i = 0; i < bucket.length; i++)
                 {
                     if (frm == 0) {
-                        if (a[i].TSK_ASSUSER != null && a[i].TSK_SBMTSTATUS == "false") {
+                        if (bucket[i].TSK_ASSUSER != null && bucket[i].TSK_SBMTSTATUS == "false") {
 
-                            $("#card").append('<div class="row" style="margin-bottom: 10px; border: 1px solid #ddd; border-bottom: 2px solid #ddd; border-radius: 10px; padding-bottom: 15px; ">\
+                            $("#card").append('<div class="row" style="margin-bottom: 10px; border: 2px solid #007E33; border-radius: 5px; padding-bottom: 15px; ">\
                                                 <div class="col-3">\
                                                     <div class="form-group">\
                                                         <label for="cmpnyID">Company ID :</label>\
-                                                        <span id="cmpnyID">'+ a[i].TSK_COMID + '</span>\
+                                                        <span id="cmpnyID">'+ bucket[i].TSK_COMID + '</span>\
                                                     </div>\
                                                     <div class="form-group">\
                                                         <label for="taskID">Task ID :</label>\
-                                                        <span id="taskID">'+ a[i].TSK_ID + '</span>\
+                                                        <span id="taskID">'+ bucket[i].TSK_ID + '</span>\
                                                     </div>\
                                                     <div class="form-group">\
                                                         <label for="stDate">Start Date :</label>\
-                                                        <span id="stDate">'+ a[i].TSK_STDATE.substring(0, 10) + '</span>\
+                                                        <span id="stDate">'+ bucket[i].TSK_STDATE.substring(0, 10) + '</span>\
                                                     </div>\
                                                     <div class="form-group">\
                                                         <label for="endDate">End Date :</label>\
-                                                        <span id="endDate">'+ a[i].TSK_ENDATE.substring(0, 10) + '</span>\
+                                                        <span id="endDate">'+ bucket[i].TSK_ENDATE.substring(0, 10) + '</span>\
                                                     </div>\
                                                 </div>\
                                                 <div class="col-6">\
@@ -161,21 +173,20 @@
                                                             <label for="tskDisc">Discription :</label>\
                                                         </div>\
                                                     </div>\
-                                                    <textarea readonly>'+ a[i].TSK_DESC + '</textarea>\
+                                                    <textarea readonly>'+ bucket[i].TSK_DESC + '</textarea>\
                                                 </div>\
                                                 <div class="col-3">\
                                                     <div class="container">\
                                                         <div class="form-group">\
                                                             <label for="priority">Priority :</label>\
-                                                            <span id="priority">'+ a[i].TSK_PRIORITY + '</span>\
-                                                        </div>\
-                                                        <div class="form-group">\
-                                                            <label for="supFile">Sup. File :</label>\
-                                                            <span id="supFile">File</span>\
+                                                            <span id="priority">'+ bucket[i].TSK_PRIORITY + '</span>\
                                                         </div>\
                                                         <div class="form-group">\
                                                             <label for="assUser">Claimed by :</label>\
-                                                            <span id="assUser">'+ a[i].TSK_ASSUSER + '</span>\
+                                                            <span id="assUser">'+ bucket[i].TSK_ASSUSER + '</span>\
+                                                        </div>\
+                                                        <div class="form-group" style="padding-top:40px;">\
+                                                             <button id="'+ bucket[i].TSK_ID + '" onclick="DownloadOnClick(this.id, 1)" type="button" style="bottom:0;width:100%;" class="btn btn-secondary">Sup. File Download</button>\
                                                         </div>\
                                                     </div>\
                                                 </div>\
@@ -183,24 +194,24 @@
                         }
                     }
                     else if (frm == 1) {
-                        if (a[i].TSK_ASSUSER == null) {
-                            $("#card").append('<div class="row" style="margin-bottom: 10px; border: 1px solid #ddd; border-bottom: 2px solid #ddd; border-radius: 10px; padding-bottom: 15px; ">\
+                        if (bucket[i].TSK_ASSUSER == null) {
+                            $("#card").append('<div class="row" style="margin-bottom: 10px; border: 2px solid #007E33; border-radius: 5px; padding-bottom: 15px; ">\
                                                 <div class="col-3">\
                                                     <div class="form-group">\
                                                         <label for="cmpnyID">Company ID :</label>\
-                                                        <span id="cmpnyID">'+ a[i].TSK_COMID + '</span>\
+                                                        <span id="cmpnyID">'+ bucket[i].TSK_COMID + '</span>\
                                                     </div>\
                                                     <div class="form-group">\
                                                         <label for="taskID">Task ID :</label>\
-                                                        <span id="taskID">'+ a[i].TSK_ID + '</span>\
+                                                        <span id="taskID">'+ bucket[i].TSK_ID + '</span>\
                                                     </div>\
                                                     <div class="form-group">\
                                                         <label for="stDate">Start Date :</label>\
-                                                        <span id="stDate">'+ a[i].TSK_STDATE.substring(0, 10) + '</span>\
+                                                        <span id="stDate">'+ bucket[i].TSK_STDATE.substring(0, 10) + '</span>\
                                                     </div>\
                                                     <div class="form-group">\
                                                         <label for="endDate">End Date :</label>\
-                                                        <span id="endDate">'+ a[i].TSK_ENDATE.substring(0, 10) + '</span>\
+                                                        <span id="endDate">'+ bucket[i].TSK_ENDATE.substring(0, 10) + '</span>\
                                                     </div>\
                                                 </div>\
                                                 <div class="col-6">\
@@ -209,20 +220,20 @@
                                                             <label for="tskDisc">Discription :</label>\
                                                         </div>\
                                                     </div>\
-                                                    <textarea readonly>'+ a[i].TSK_DESC + '</textarea>\
+                                                    <textarea readonly>'+ bucket[i].TSK_DESC + '</textarea>\
                                                 </div>\
                                                 <div class="col-3">\
                                                     <div class="container">\
                                                         <div class="form-group">\
                                                             <label for="priority">Priority :</label>\
-                                                            <span id="priority">'+ a[i].TSK_PRIORITY + '</span>\
+                                                            <span id="priority">'+ bucket[i].TSK_PRIORITY + '</span>\
                                                         </div>\
-                                                        <div class="form-group">\
-                                                            <label for="supFile">Sup. File :</label>\
-                                                            <span id="supFile">File</span>\
+                                                        <div class="form-group" style="padding-top:20px;">\
+                                                             <button id = "'+ bucket[i].TSK_ID + '" onclick = "DownloadOnClick(this.id)" type = "button" style = "bottom:0;width:100%;" class= "btn btn-secondary" > Sup.File Download</button>\
+                                                            @*@Html.ActionLink("Downlaod", "DownLoadFile", "Home",new {tskId = ""})*@\
                                                         </div>\
-                                                        <div class="form-group" style="padding-top:40px;">\
-                                                            <button id="'+ a[i].TSK_ID + '" onclick="ActionOnClick(this.id, 1)" type="button" style="bottom:0;width:100%;" class="btn btn-success">Claim Task</button>\
+                                                        <div class="form-group" style="padding-top:20px;">\
+                                                            <button id="'+ bucket[i].TSK_ID + '" onclick="ActionOnClick(this.id, 2)" type="button" style="bottom:0;width:100%;" class="btn btn-success">Submit Task</button>\
                                                         </div>\
                                                     </div>\
                                                 </div>\
@@ -230,24 +241,24 @@
                         }
                     }
                     else if (frm == 2) {
-                        if (a[i].TSK_ASSUSER == "@User.FindFirst("User_ID").Value" && a[i].TSK_SBMTSTATUS == "false") {
-                            $("#card").append('<div class="row" style="margin-bottom: 10px; border: 1px solid #ddd; border-bottom: 2px solid #ddd; border-radius: 10px; padding-bottom: 15px; ">\
+                        if (bucket[i].TSK_ASSUSER == "@User.FindFirst("User_ID").Value" && bucket[i].TSK_SBMTSTATUS == "false") {
+                            $("#card").append('<div class="row" style="margin-bottom: 10px; border: 2px solid #007E33; border-radius: 5px; padding-bottom: 15px; ">\
                                                 <div class="col-3">\
                                                     <div class="form-group">\
                                                         <label for="cmpnyID">Company ID :</label>\
-                                                        <span id="cmpnyID">'+ a[i].TSK_COMID + '</span>\
+                                                        <span id="cmpnyID">'+ bucket[i].TSK_COMID + '</span>\
                                                     </div>\
                                                     <div class="form-group">\
                                                         <label for="taskID">Task ID :</label>\
-                                                        <span id="taskID">'+ a[i].TSK_ID + '</span>\
+                                                        <span id="taskID">'+ bucket[i].TSK_ID + '</span>\
                                                     </div>\
                                                     <div class="form-group">\
                                                         <label for="stDate">Start Date :</label>\
-                                                        <span id="stDate">'+ a[i].TSK_STDATE.substring(0, 10) + '</span>\
+                                                        <span id="stDate">'+ bucket[i].TSK_STDATE.substring(0, 10) + '</span>\
                                                     </div>\
                                                     <div class="form-group">\
                                                         <label for="endDate">End Date :</label>\
-                                                        <span id="endDate">'+ a[i].TSK_ENDATE.substring(0, 10) + '</span>\
+                                                        <span id="endDate">'+ bucket[i].TSK_ENDATE.substring(0, 10) + '</span>\
                                                     </div>\
                                                 </div>\
                                                 <div class="col-6">\
@@ -256,20 +267,20 @@
                                                             <label for="tskDisc">Discription :</label>\
                                                         </div>\
                                                     </div>\
-                                                    <textarea readonly>'+ a[i].TSK_DESC + '</textarea>\
+                                                    <textarea readonly>'+ bucket[i].TSK_DESC + '</textarea>\
                                                 </div>\
                                                 <div class="col-3">\
                                                     <div class="container">\
                                                         <div class="form-group">\
                                                             <label for="priority">Priority :</label>\
-                                                            <span id="priority">'+ a[i].TSK_PRIORITY + '</span>\
+                                                            <span id="priority">'+ bucket[i].TSK_PRIORITY + '</span>\
                                                         </div>\
-                                                        <div class="form-group">\
-                                                            <label for="supFile">Sup. File :</label>\
-                                                            <span id="supFile">File</span>\
+                                                        <div class="form-group" style="padding-top:20px;">\
+                                                             <button id = "'+ bucket[i].TSK_ID + '" onclick = "DownloadOnClick(this.id)" type = "button" style = "bottom:0;width:100%;" class= "btn btn-secondary" > Sup.File Download</button>\
+                                                            @*@Html.ActionLink("Downlaod", "DownLoadFile", "Home",new {tskId = ""})*@\
                                                         </div>\
-                                                        <div class="form-group" style="padding-top:40px;">\
-                                                            <button id="'+ a[i].TSK_ID + '" onclick="ActionOnClick(this.id, 2)" type="button" style="bottom:0;width:100%;" class="btn btn-success">Submit Task</button>\
+                                                        <div class="form-group" style="padding-top:20px;">\
+                                                            <button id="'+ bucket[i].TSK_ID + '" onclick="ActionOnClick(this.id, 2)" type="button" style="bottom:0;width:100%;" class="btn btn-success">Submit Task</button>\
                                                         </div>\
                                                     </div>\
                                                 </div>\
@@ -277,25 +288,25 @@
                         }
                     }
                     else if (frm == 3) {
-                        if (a[i].TSK_SBMTSTATUS == "true")
+                        if (bucket[i].TSK_SBMTSTATUS == "true")
                         {
-                            $("#card").append('<div class="row" style="margin-bottom: 10px; border: 1px solid #ddd; border-bottom: 2px solid #ddd; border-radius: 10px; padding-bottom: 15px; ">\
+                            $("#card").append('<div class="row" style="margin-bottom: 10px; border: 2px solid #007E33; border-radius: 5px; padding-bottom: 15px; ">\
                                                 <div class="col-3">\
                                                     <div class="form-group">\
                                                         <label for="cmpnyID">Company ID :</label>\
-                                                        <span id="cmpnyID">'+ a[i].TSK_COMID + '</span>\
+                                                        <span id="cmpnyID">'+ bucket[i].TSK_COMID + '</span>\
                                                     </div>\
                                                     <div class="form-group">\
                                                         <label for="taskID">Task ID :</label>\
-                                                        <span id="taskID">'+ a[i].TSK_ID + '</span>\
+                                                        <span id="taskID">'+ bucket[i].TSK_ID + '</span>\
                                                     </div>\
                                                     <div class="form-group">\
                                                         <label for="stDate">Start Date :</label>\
-                                                        <span id="stDate">'+ a[i].TSK_STDATE.substring(0, 10) + '</span>\
+                                                        <span id="stDate">'+ bucket[i].TSK_STDATE.substring(0, 10) + '</span>\
                                                     </div>\
                                                     <div class="form-group">\
                                                         <label for="endDate">End Date :</label>\
-                                                        <span id="endDate">'+ a[i].TSK_ENDATE.substring(0, 10) + '</span>\
+                                                        <span id="endDate">'+ bucket[i].TSK_ENDATE.substring(0, 10) + '</span>\
                                                     </div>\
                                                 </div>\
                                                 <div class="col-6">\
@@ -304,21 +315,17 @@
                                                             <label for="tskDisc">Discription :</label>\
                                                         </div>\
                                                     </div>\
-                                                    <textarea readonly>'+ a[i].TSK_DESC + '</textarea>\
+                                                    <textarea readonly>'+ bucket[i].TSK_DESC + '</textarea>\
                                                 </div>\
                                                 <div class="col-3">\
                                                     <div class="container">\
                                                         <div class="form-group">\
                                                             <label for="priority">Priority :</label>\
-                                                            <span id="priority">'+ a[i].TSK_PRIORITY + '</span>\
+                                                            <span id="priority">'+ bucket[i].TSK_PRIORITY + '</span>\
                                                         </div>\
                                                         <div class="form-group">\
-                                                            <label for="supFile">Sup. File :</label>\
-                                                            <span id="supFile">File</span>\
-                                                        </div>\
-                                                        <div class="form-group">\
-                                                            <label for="assUser">Claimed by :</label>\
-                                                            <span id="assUser">'+ a[i].TSK_ASSUSER + '</span>\
+                                                            <label for="assUser">Submited by :</label>\
+                                                            <span id="assUser">'+ bucket[i].TSK_ASSUSER + '</span>\
                                                         </div>\
                                                     </div>\
                                                 </div>\
@@ -382,6 +389,28 @@
 
         claimTskId = "";
         submitTskId = "";
+    }
+
+    function DownloadOnClick(id)
+    {
+        var bucket;
+        $.ajax({
+                method: "GET",
+                url: "@Url.Action("DownLoadFile")",
+                data: { "tskId": id },
+                success: function (data)
+                {
+                    bucket = JSON.parse(data);
+
+                    var a = document.createElement("a");
+                    a.href = "data:application/pdf;base64," + bucket;
+                    a.download = id + " Documents.pdf";
+                    a.click();
+                },
+                error: function (req, status, error) {
+
+                }
+            });
     }
 
 </script>

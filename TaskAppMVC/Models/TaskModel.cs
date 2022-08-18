@@ -13,7 +13,7 @@ namespace TaskAppMVC.Models
         public DateTime TSK_ENDATE { get; set; }
         public string TSK_ASSUSER { get; set; }
         public string TSK_SBMTSTATUS { get; set; }
-        public string TSK_DESC { get; set; }
+        public string TSK_DESC { get; set; }   
         //public string TSK_SUPFILE { get; set; }
         public int TSK_PRIORITY { get; set; }
         public string TSK_CREATEUSER { get; set; }
