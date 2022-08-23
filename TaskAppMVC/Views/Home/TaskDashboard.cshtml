@@ -142,11 +142,11 @@
             dataType: "json",
             success: function (data) {
                 bucket = JSON.parse(data);
-
                 for (i = 0; i < bucket.length; i++)
                 {
                     if (frm == 0) {
-                        if (bucket[i].TSK_ASSUSER != null && bucket[i].TSK_SBMTSTATUS == "false") {
+                        if (bucket[i].TSK_ASSUSER != null && bucket[i].TSK_SBMTSTATUS == "false")   //Claimed
+                        {
 
                             $("#card").append('<div class="row" style="margin-bottom: 10px; border: 2px solid #007E33; border-radius: 5px; padding-bottom: 15px; ">\
                                                 <div class="col-3">\
@@ -194,7 +194,8 @@
                         }
                     }
                     else if (frm == 1) {
-                        if (bucket[i].TSK_ASSUSER == null) {
+                        if (bucket[i].TSK_ASSUSER == null)  //Not Claimed
+                        {
                             $("#card").append('<div class="row" style="margin-bottom: 10px; border: 2px solid #007E33; border-radius: 5px; padding-bottom: 15px; ">\
                                                 <div class="col-3">\
                                                     <div class="form-group">\
@@ -233,15 +234,17 @@
                                                             @*@Html.ActionLink("Downlaod", "DownLoadFile", "Home",new {tskId = ""})*@\
                                                         </div>\
                                                         <div class="form-group" style="padding-top:20px;">\
-                                                            <button id="'+ bucket[i].TSK_ID + '" onclick="ActionOnClick(this.id, 2)" type="button" style="bottom:0;width:100%;" class="btn btn-success">Submit Task</button>\
+                                                            <button id="'+ bucket[i].TSK_ID + '" onclick="ActionOnClick(this.id, 1)" type="button" style="bottom:0;width:100%;" class="btn btn-success">Claim Task</button>\
                                                         </div>\
                                                     </div>\
                                                 </div>\
                                             </div>');
                         }
                     }
-                    else if (frm == 2) {
-                        if (bucket[i].TSK_ASSUSER == "@User.FindFirst("User_ID").Value" && bucket[i].TSK_SBMTSTATUS == "false") {
+                    else if (frm == 2)
+                    {
+                        if (bucket[i].TSK_ASSUSER == "@User.FindFirst("User_ID").Value" && bucket[i].TSK_SBMTSTATUS == "false") //Claimed By Me
+                        {
                             $("#card").append('<div class="row" style="margin-bottom: 10px; border: 2px solid #007E33; border-radius: 5px; padding-bottom: 15px; ">\
                                                 <div class="col-3">\
                                                     <div class="form-group">\
@@ -288,7 +291,7 @@
                         }
                     }
                     else if (frm == 3) {
-                        if (bucket[i].TSK_SBMTSTATUS == "true")
+                        if (bucket[i].TSK_SBMTSTATUS == "true")     //Submited
                         {
                             $("#card").append('<div class="row" style="margin-bottom: 10px; border: 2px solid #007E33; border-radius: 5px; padding-bottom: 15px; ">\
                                                 <div class="col-3">\
