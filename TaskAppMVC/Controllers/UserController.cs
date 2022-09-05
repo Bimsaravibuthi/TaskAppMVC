@@ -18,12 +18,6 @@ namespace TaskAppMVC.Controllers
     {
         List<UserViewModel> userdetails = new List<UserViewModel>();
 
-        public readonly IConfiguration Configuration;
-        public UserController(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
         public IActionResult Login()
         {
             return View();
@@ -86,7 +80,7 @@ namespace TaskAppMVC.Controllers
         {
             try
             {
-                APICommunicator api = new APICommunicator(Configuration);
+                APICommunicator api = new APICommunicator();
 
                 string strResultTest = api.GetStoredProDataWithParaHeader("Usr_Login", "User_id", _emai);
                 var elevadoresModels = JsonConvert.DeserializeObject<List<UserViewModel>>(strResultTest);

@@ -25,13 +25,6 @@ namespace TaskAppMVC.Controllers
         List<TaskModel> tasks = new List<TaskModel>();
         List<GetFileModel> files = new List<GetFileModel>();
 
-        public readonly IConfiguration Configuration;
-
-        public HomeController(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
         public IActionResult Index()
         {
             return View();
@@ -70,7 +63,7 @@ namespace TaskAppMVC.Controllers
             string maxTaskId = GetMaxTaskId();
             try
             {
-                APICommunicator api = new APICommunicator(Configuration);
+                APICommunicator api = new APICommunicator();
 
                 string strResultTest = api.PostStoredProDataWithPara("Save_Task",
                     "Task_id|Company_id|Start_date|End_date|Description|Support_file|Priority|Create_user",
@@ -199,7 +192,7 @@ namespace TaskAppMVC.Controllers
         {
             try
             {
-                APICommunicator api = new APICommunicator(Configuration);
+                APICommunicator api = new APICommunicator();
 
                 string strResultTest = api.GetStoredProDataNoPara("Select_Max_Tsk_Id");
                 var elevadoresModels = JsonConvert.DeserializeObject<List<MaxTaskIdModel>>(strResultTest);
@@ -223,7 +216,7 @@ namespace TaskAppMVC.Controllers
         {
             try
             {
-                APICommunicator api = new APICommunicator(Configuration);
+                APICommunicator api = new APICommunicator();
                 
                 string strResultTest = api.GetStoredProDataNoPara("All_Users_Id");
                 var elevadoresModels = JsonConvert.DeserializeObject<List<AllUserIdNameModel>>(strResultTest);
@@ -245,7 +238,7 @@ namespace TaskAppMVC.Controllers
         }
         public string GetMaxUserId()
         {
-            APICommunicator api = new APICommunicator(Configuration);
+            APICommunicator api = new APICommunicator();
 
             string strResultTest = api.GetStoredProDataNoPara("Select_Max_Usr_Id");
             var elevadoresModels = JsonConvert.DeserializeObject<List<MaxUserIdModel>>(strResultTest);
@@ -266,7 +259,7 @@ namespace TaskAppMVC.Controllers
                 string userId = GetMaxUserId();
                 string pwd = PWD_EN_DE.EncryptString(cum.USR_PASSWORD.ToString());
 
-                APICommunicator api = new APICommunicator(Configuration);            
+                APICommunicator api = new APICommunicator();            
 
                 string strResultTest = api.PostStoredProDataWithPara("Create_User",
                     "Usr_id|Usr_password|Usr_nic|Usr_namefull|Usr_createdate|Usr_level|Usr_createdby",
@@ -291,7 +284,7 @@ namespace TaskAppMVC.Controllers
         {
             try
             {
-                APICommunicator api = new APICommunicator(Configuration);
+                APICommunicator api = new APICommunicator();
                 string strResultTest = api.GetStoredProDataWithParaHeader("Created_User",
                     "Usr_createdby", User.FindFirst("User_ID").Value);
                 createdUser = JsonConvert.DeserializeObject<List<CreatedUserModel>>(strResultTest);
@@ -314,7 +307,7 @@ namespace TaskAppMVC.Controllers
         {
             try
             {
-                APICommunicator api = new APICommunicator(Configuration);
+                APICommunicator api = new APICommunicator();
 
                 string strResultTest = api.GetStoredProDataNoPara("All_Tasks");
                 var elevadoresModels = JsonConvert.DeserializeObject<List<TaskModel>>(strResultTest);
@@ -338,7 +331,7 @@ namespace TaskAppMVC.Controllers
         {
             try
             {
-                APICommunicator api = new APICommunicator(Configuration);
+                APICommunicator api = new APICommunicator();
 
                 string strResultTest = api.PostStoredProDataWithPara("Claim_Task", "Tsk_id|Usr_id", tskId+"|"+usrId);
                 var elevadoresModels = JsonConvert.DeserializeObject(strResultTest);
@@ -361,7 +354,7 @@ namespace TaskAppMVC.Controllers
         {
             try
             {
-                APICommunicator api = new APICommunicator(Configuration);
+                APICommunicator api = new APICommunicator();
 
                 string strResultTest = api.PostStoredProDataWithPara("Submit_Task", "Tsk_id", tskId);
                 var elevadoresModels = JsonConvert.DeserializeObject(strResultTest);
@@ -385,7 +378,7 @@ namespace TaskAppMVC.Controllers
         {
             try
             {
-                APICommunicator api = new APICommunicator(Configuration);
+                APICommunicator api = new APICommunicator();
 
                 string strResultTest = api.GetStoredProDataWithParaHeader("File_Download",
                     "tsk_id", tskId);

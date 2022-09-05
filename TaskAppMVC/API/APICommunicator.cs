@@ -5,22 +5,23 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using TaskAppMVC.DB_Connection;
 
 namespace TaskAppMVC.API
 {
     public class APICommunicator
     {
-        private readonly IConfiguration Configuration;
-
+        //private readonly IConfiguration Configuration;
+        private string Configuration;
         private string strTKN = "1";
-        public APICommunicator(IConfiguration configuration)
+        public APICommunicator()
         {
-            Configuration = configuration;
+            Configuration = Database.APICommunicator();
         }
 
         public string GetStoredProDataWithParaHeader(string strProName, string strParaNames, string strParaValues)
         {
-            string StringURL = String.Format(@Configuration["RootConnectionString"] + "getStoredProDataWithParaHeader?tkn=" + strTKN + "&strProcedure=" + strProName + "&strParaNames=" + strParaNames + "&strParaValues=" + strParaValues);
+            string StringURL = String.Format(@Configuration + "getStoredProDataWithParaHeader?tkn=" + strTKN + "&strProcedure=" + strProName + "&strParaNames=" + strParaNames + "&strParaValues=" + strParaValues);
             
             WebRequest reqObjectGET = WebRequest.Create(StringURL);
 
@@ -29,7 +30,7 @@ namespace TaskAppMVC.API
             resObjectGET = (HttpWebResponse)reqObjectGET.GetResponse();
 
             string strResultTest = null;
-            //stream kerala read keranawa
+            //stream kerala read karanawa
             using (Stream strm = resObjectGET.GetResponseStream())
             {
                 StreamReader sr = new StreamReader(strm);
@@ -41,7 +42,7 @@ namespace TaskAppMVC.API
         }
         public string GetStoredProDataNoPara(string strProName)
         {
-            string StringURL = String.Format(@Configuration["RootConnectionString"] + "getStoredProDataNoPara?tkn=" + strTKN + "&strProcedure=" + strProName);
+            string StringURL = String.Format(@Configuration + "getStoredProDataNoPara?tkn=" + strTKN + "&strProcedure=" + strProName);
 
             WebRequest reqObjectGET = WebRequest.Create(StringURL);
 
@@ -66,7 +67,7 @@ namespace TaskAppMVC.API
 
             try 
             {
-                string StringURL = String.Format(@Configuration["RootConnectionString"] + "PostStoredProDataWithPara");
+                string StringURL = String.Format(@Configuration + "PostStoredProDataWithPara");
                 WebRequest reqObjectPOST = WebRequest.Create(StringURL);
                 reqObjectPOST.Method = "POST";
                 reqObjectPOST.ContentType = "application/json";
